@@ -29,6 +29,44 @@
 
 using libsemigroups::Semigroup;
 
+#ifdef SEMIGROUPS_KERNEL_DEBUG
+#define ERROR(obj, message)                               \
+  char buf[128];                                          \
+  strncpy(buf, __func__, sizeof(buf));                    \
+  strncat(buf, ": ", (sizeof(buf) * 2));                  \
+  strncat(buf, message, (sizeof(buf) * strlen(message))); \
+  strncat(buf, " not a %s,", (sizeof(buf) * 9));          \
+  ErrorQuit(buf, (Int) TNAM_OBJ(obj), 0L);
+
+#define CHECK_SEMI_OBJ(obj)                        \
+  if (CALL_1ARGS(IsSemigroup, obj) != True) {      \
+    ERROR(obj, "the argument must be a semigroup") \
+  }
+#define CHECK_PLIST(obj)                            \
+  if (!IS_PLIST(obj)) {                             \
+    ERROR(obj, "the argument must be a plain list") \
+  }
+#define CHECK_LIST(obj)                       \
+  if (!IS_LIST(obj)) {                        \
+    ERROR(obj, "the argument must be a list") \
+  }
+#define CHECK_INTOBJ(obj)                         \
+  if (!IS_INTOBJ(obj)) {                          \
+    ERROR(obj, "the argument must be an integer") \
+  }
+#define CHECK_POS_INTOBJ(obj)                                  \
+  CHECK_INTOBJ(obj)                                            \
+  if (INT_INTOBJ(obj) < 0) {                                   \
+    ERROR(obj, "the argument must be an non-negative integer") \
+  }
+#else
+#define CHECK_SEMI_OBJ(so)
+#define CHECK_PLIST(obj)
+#define CHECK_LIST(obj)
+#define CHECK_INTOBJ(obj)
+#define CHECK_POS_INTOBJ(obj)
+#endif
+
 // Typedef for readability, an en_semi_obj_t should be an Obj of TNUM_OBJ =
 // T_SEMI and SUBTYPE_OF_T_SEMI = T_SEMI_SUBTYPE_ENSEMI
 
@@ -63,6 +101,7 @@ gap_list_t semi_obj_get_gens(gap_semigroup_t so);
 gap_rec_t semi_obj_get_fropin(gap_semigroup_t so);
 en_semi_t semi_obj_get_type(gap_semigroup_t so);
 Semigroup* semi_obj_get_semi_cpp(gap_semigroup_t so);
+en_semi_obj_t semi_obj_get_en_semi(gap_semigroup_t so);
 
 static inline en_semi_t en_semi_get_type(en_semi_obj_t es) {
   SEMIGROUPS_ASSERT(TNUM_OBJ(es) == T_SEMI

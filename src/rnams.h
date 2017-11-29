@@ -64,6 +64,8 @@ static Int RNam_fp_extra  = 0;
 static Int RNam_en_semi_cpp_semi = 0;
 static Int RNam_en_semi_fropin   = 0;
 
+static Int RNam_NewLambdaOrb = 0;
+
 static inline void initRNams() {
   if (!RNam_batch_size) {
     RNam_batch_size        = RNamName("batch_size");
@@ -106,6 +108,8 @@ static inline void initRNams() {
 
     RNam_en_semi_cpp_semi = RNamName("__en_semi_cpp_semi");
     RNam_en_semi_fropin   = RNamName("__en_semi_fropin");
+
+    RNam_NewLambdaOrb = RNamName("NewLambdaOrb");
   }
 }
 

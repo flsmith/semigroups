@@ -30,6 +30,7 @@
 #include "semigroups-debug.h"
 #include "fropin.h"
 #include "semigrp.h"
+#include "orb.h"
 #include "uf.h"
 
 #include "libsemigroups/src/cong.h"
@@ -497,6 +498,9 @@ static StructGVarFunc GVarFuncs[] = {
                BIPART_NR_IDEMPOTENTS,
                5,
                "o, scc, lookup, nr_threads, report"),
+    
+    GVAR_ENTRY("orb.cc", AC_SEMI_L_ORB_SIZE, 1, "S"),
+    //GVAR_ENTRY("orb.cc", semi_obj_init_orb, 1, "S"), //TODO:remove
     {0, 0, 0, 0, 0} /* Finish with an empty entry */
 };
 
