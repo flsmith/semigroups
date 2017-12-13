@@ -15,8 +15,13 @@ DeclareAttribute("DualSemigroup", IsSemigroup);
 DeclareSynonym("IsDualSemigroup", IsSemigroup and IsDualSemigroupElementCollection);
 DeclareAttribute("TypeDualSemigroupElements", IsDualSemigroup);
 
+DeclareAttribute("DualSemigroupOfFamily", IsFamily);
 
 DeclareGlobalFunction("DualSemigroupElement");
 
 DeclareCategory("IsDualGreensDClass", IsGreensDClass);
-
+DeclareAttribute("UnderlyingDClassOfDualGreensDClass", IsDualGreensDClass);
+DeclareCategory("IsDualGreensLClass", IsGreensLClass);
+DeclareAttribute("UnderlyingRClassOfDualGreensLClass", IsDualGreensLClass);
+DeclareCategory("IsDualGreensRClass", IsGreensRClass);
+DeclareAttribute("UnderlyingLClassOfDualGreensRClass", IsDualGreensRClass);
