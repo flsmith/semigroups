@@ -12,5 +12,11 @@
 DeclareCategory("IsDualSemigroupElement", IsAssociativeElement);
 DeclareCategoryCollections("IsDualSemigroupElement");
 DeclareAttribute("DualSemigroup", IsSemigroup);
+DeclareSynonym("IsDualSemigroup", IsSemigroup and IsDualSemigroupElementCollection);
+DeclareAttribute("TypeDualSemigroupElements", IsDualSemigroup);
 
-DeclareSynonym("IsDualSemigroup", IsDualSemigroupElementCollection and IsSemigroup);
+
+DeclareGlobalFunction("DualSemigroupElement");
+
+DeclareCategory("IsDualGreensDClass", IsGreensDClass);
+
