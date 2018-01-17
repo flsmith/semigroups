@@ -105,7 +105,7 @@ function(S)
 end);
 
 SEMIGROUPS.GreensDualClasses = function(S, type)
-  local class, classes, D, dualclass, dualclasses, fam;
+  local class, classes, D, dualclass, dualclasses, fam, rel;
 
   dualclasses := [];
 
@@ -113,10 +113,13 @@ SEMIGROUPS.GreensDualClasses = function(S, type)
   
   if type = IsDualGreensDClass then
     classes := GreensDClasses(DualSemigroup(S));
+    rel := GreensDRelation(S);
   elif type = IsDualGreensLClass then
     classes := GreensRClasses(DualSemigroup(S));
+    rel := GreensLRelation(S);
   elif type = IsDualGreensRClass then
     classes := GreensLClasses(DualSemigroup(S));
+    rel := GreensRRelation(S);
   else
     ErrorNoReturn("Semigroups: SEMIGROUPS.GreensDualClasses: \n",
                   "the second argument should be one of ",
@@ -130,7 +133,7 @@ SEMIGROUPS.GreensDualClasses = function(S, type)
                                     IsEquivalenceClassDefaultRep), 
                            rec());
 
-    SetEquivalenceClassRelation(dualclass, GreensDRelation(S));
+    SetEquivalenceClassRelation(dualclass, rel);
     SetAssociatedSemigroup(dualclass, S);
     SetUnderlyingGreensClassOfDualGreensClass(dualclass, class);
 
@@ -139,33 +142,33 @@ SEMIGROUPS.GreensDualClasses = function(S, type)
   return dualclasses;
 end; 
 
-InstallMethod(Representative, "for a Greens's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
+InstallMethod(Representative, "for a Greens's class of a dual semigroup",
+[IsDualGreensClass],
+function(C)
   local S;
-  S := AssociatedSemigroup(D);
+  S := AssociatedSemigroup(C);
   return DualSemigroupElement(S,
-            Representative(UnderlyingDClassOfDualGreensDClass(D)));
+            Representative(UnderlyingGreensClassOfDualGreensClass(C)));
 end);
 
-InstallMethod(AsList, "for a Green's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  return List(UnderlyingDClassOfDualGreensDClass(D),
-              x -> DualSemigroupElementNC(AssociatedSemigroup(D), x));
+InstallMethod(AsList, "for a Green's class of a dual semigroup",
+[IsDualGreensClass],
+function(C)
+  return List(UnderlyingGreensClassOfDualGreensClass(D),
+              x -> DualSemigroupElementNC(AssociatedSemigroup(C), x));
 end);
 
-InstallMethod(AsSSortedList, "for a Green's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  return List(AsSSortedList(UnderlyingDClassOfDualGreensDClass(D)),
-              x -> DualSemigroupElementNC(AssociatedSemigroup(D), x));
+InstallMethod(AsSSortedList, "for a Green's class of a dual semigroup",
+[IsDualGreensClass],
+function(C)
+  return List(AsSSortedList(UnderlyingGreensClassOfDualGreensClass(C)),
+              x -> DualSemigroupElementNC(AssociatedSemigroup(C), x));
 end);
 
-InstallMethod(Size, "for a Green's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  return Size(UnderlyingDClassOfDualGreensDClass(D));
+InstallMethod(Size, "for a Green's class of a dual semigroup",
+[IsDualGreensClass],
+function(C)
+  return Size(UnderlyingGreensClassOfDualGreensClass(C));
 end);
 
 ####################
