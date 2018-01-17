@@ -18,6 +18,7 @@ DeclareAttribute("TypeDualSemigroupElements", IsDualSemigroup);
 DeclareAttribute("DualSemigroupOfFamily", IsFamily);
 
 DeclareGlobalFunction("DualSemigroupElement");
+DeclareGlobalFunction("DualSemigroupElementNC");
 
 DeclareCategory("IsDualGreensDClass", IsGreensDClass);
 DeclareAttribute("UnderlyingDClassOfDualGreensDClass", IsDualGreensDClass);

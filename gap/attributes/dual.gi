@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  dual.gd
+#W  dual.gi
 #Y  Copyright (C) 2017                                      James D. Mitchell
 ##                                                          Finn Smith
 ##
@@ -52,7 +52,6 @@ function(S)
   return dual;
 end);
 
-
 # FS: the first argument is the dual of the semigroup the second belongs to.
 # FS: We must provide either the semigroup or its dual so that we can 
 # FS: create the dual semigroup element object, and it seems more intuitive
@@ -72,12 +71,100 @@ function(S, s)
                   "the second argument must be an element of the dual ",
                   "semigroup of the first argument,");
   fi;
+  return DualSemigroupElementNC(S, s); 
+end);
+
+InstallGlobalFunction(DualSemigroupElementNC,
+function(S, s)
   if not IsDualSemigroupElement(s) then
     return Objectify(TypeDualSemigroupElements(S), [s]);
   fi;
   return s![1];
 end);
 
+################################################################################
+## Green's relations
+################################################################################
+
+####################
+## D relation
+####################
+
+InstallMethod(GreensDClasses, "for a dual semigroup",
+[IsDualSemigroup],
+function(S)
+  local classes, D, dualclass, dualclasses, fam;
+
+  dualclasses := [];
+  classes := GreensDClasses(DualSemigroup(S));
+  fam := FamilyObj(DualSemigroupElement(S, Representative(DualSemigroup(S))));
+  
+  for D in classes do
+    dualclass := Objectify(NewType(CollectionsFamily(fam),
+                                    IsDualGreensDClass and
+                                    IsEquivalenceClass and 
+                                    IsEquivalenceClassDefaultRep), 
+                           rec());
+
+    SetEquivalenceClassRelation(dualclass, GreensDRelation(S));
+    SetAssociatedSemigroup(dualclass, S);
+    SetUnderlyingDClassOfDualGreensDClass(dualclass, D);
+
+    Add(dualclasses, dualclass);
+  od;
+  return dualclasses;
+end);
+
+InstallMethod(Representative, "for a Greens's D class of a dual semigroup",
+[IsDualGreensDClass],
+function(D)
+  local S;
+  S := AssociatedSemigroup(D);
+  return DualSemigroupElement(S,
+            Representative(UnderlyingDClassOfDualGreensDClass(D)));
+end);
+
+InstallMethod(AsList, "for a Green's D class of a dual semigroup",
+[IsDualGreensDClass],
+function(D)
+  return List(UnderlyingDClassOfDualGreensDClass(D),
+              x -> DualSemigroupElement(AssociatedSemigroup(D), x));
+end);
+
+InstallMethod(AsSSortedList, "for a Green's D class of a dual semigroup",
+[IsDualGreensDClass],
+function(D)
+  return List(AsSSortedList(UnderlyingDClassOfDualGreensDClass(D)),
+              x -> DualSemigroupElement(AssociatedSemigroup(D), x));
+
+end);
+
+####################
+## L relation
+####################
+
+InstallMethod(AsList, "for a Green's L class of a dual semigroup",
+[IsDualGreensLClass],
+function(L)
+  return List(UnderlyingRClassOfDualGreensLClass(L),
+              x -> DualSemigroupElement(AssociatedSemigroup(L), x));
+end);
+
+####################
+## R relation
+####################
+
+InstallMethod(AsList, "for a Green's R class of a dual semigroup",
+[IsDualGreensRClass],
+function(R)
+  return List(UnderlyingLClassOfDualGreensRClass(R),
+              x -> DualSemigroupElement(AssociatedSemigroup(R), x));
+end);
+
+
+################################################################################
+## Technical methods
+################################################################################
 
 InstallMethod(MonoidByAdjoiningIdentity, "for a dual semigroup",
 [IsDualSemigroup],
@@ -114,65 +201,6 @@ function(S)
   return DualSemigroupElement(S, Representative(DualSemigroup(S)));
 end);
 
-InstallMethod(GreensDClasses, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  local classes, D, dualclass, dualclasses, fam;
-
-  dualclasses := [];
-  classes := GreensDClasses(DualSemigroup(S));
-  fam := FamilyObj(DualSemigroupElement(S, Representative(DualSemigroup(S))));
-  
-  for D in classes do
-    dualclass := Objectify(NewType(CollectionsFamily(fam),
-                                    IsDualGreensDClass and
-                                    IsGreensDClass and 
-                                    IsEquivalenceClass and 
-                                    IsEquivalenceClassDefaultRep), 
-                           rec());
-    SetAssociatedSemigroup(dualclass, S);
-    SetUnderlyingDClassOfDualGreensDClass(dualclass, D);
-    Add(dualclasses, dualclass);
-  od;
-  return dualclasses;
-end);
-
-InstallMethod(Representative, "for a Greens's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  local S;
-  S := AssociatedSemigroup(D);
-  return DualSemigroupElement(S, Representative(DualSemigroup(S)));
-end);
-
-InstallMethod(AsList, "for a Green's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  return List(UnderlyingDClassOfDualGreensDClass(D),
-              x -> DualSemigroupElement(AssociatedSemigroup(D), x));
-end);
-
-InstallMethod(AsSSortedList, "for a Green's D class of a dual semigroup",
-[IsDualGreensDClass],
-function(D)
-  return List(AsSSortedList(UnderlyingDClassOfDualGreensDClass(D)),
-              x -> DualSemigroupElement(AssociatedSemigroup(D), x));
-
-end);
-
-InstallMethod(AsList, "for a Green's L class of a dual semigroup",
-[IsDualGreensLClass],
-function(L)
-  return List(UnderlyingRClassOfDualGreensLClass(L),
-              x -> DualSemigroupElement(AssociatedSemigroup(L), x));
-end);
-
-InstallMethod(AsList, "for a Green's R class of a dual semigroup",
-[IsDualGreensRClass],
-function(R)
-  return List(UnderlyingLClassOfDualGreensRClass(R),
-              x -> DualSemigroupElement(AssociatedSemigroup(R), x));
-end);
 
 InstallMethod(Size, "for a dual semigroup",
 [IsDualSemigroup],
@@ -184,7 +212,7 @@ end);
 InstallMethod(AsList, "for a dual semigroup",
 [IsDualSemigroup],
 function(S)
-  return List(DualSemigroup(S), s -> DualSemigroupElement(S, s));
+  return List(DualSemigroup(S), s -> DualSemigroupElementNC(S, s));
 end);
 
 InstallMethod(\*, "for dual semigroup elements",
