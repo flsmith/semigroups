@@ -20,9 +20,8 @@ DeclareAttribute("DualSemigroupOfFamily", IsFamily);
 DeclareGlobalFunction("DualSemigroupElement");
 DeclareGlobalFunction("DualSemigroupElementNC");
 
-DeclareCategory("IsDualGreensDClass", IsGreensDClass);
-DeclareAttribute("UnderlyingDClassOfDualGreensDClass", IsDualGreensDClass);
-DeclareCategory("IsDualGreensLClass", IsGreensLClass);
-DeclareAttribute("UnderlyingRClassOfDualGreensLClass", IsDualGreensLClass);
-DeclareCategory("IsDualGreensRClass", IsGreensRClass);
-DeclareAttribute("UnderlyingLClassOfDualGreensRClass", IsDualGreensRClass);
+DeclareCategory("IsDualGreensClass", IsGreensClass);
+DeclareCategory("IsDualGreensDClass", IsDualGreensClass and IsGreensDClass);
+DeclareCategory("IsDualGreensLClass", IsDualGreensClass and IsGreensLClass);
+DeclareCategory("IsDualGreensRClass", IsDualGreensClass and IsGreensRClass);
+DeclareAttribute("UnderlyingGreensClassOfDualGreensClass", IsDualGreensClass);
