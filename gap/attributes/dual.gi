@@ -104,7 +104,7 @@ function(S)
   return SEMIGROUPS.GreensDualClasses(S, IsDualGreensRClass);  
 end);
 
-SEMIGROUPS.GreensDualClasses = function(S, type)
+SEMIGROUPS.GreensDualClasses := function(S, type)
   local class, classes, D, dualclass, dualclasses, fam, rel;
 
   dualclasses := [];
@@ -154,7 +154,7 @@ end);
 InstallMethod(AsList, "for a Green's class of a dual semigroup",
 [IsDualGreensClass],
 function(C)
-  return List(UnderlyingGreensClassOfDualGreensClass(D),
+  return List(UnderlyingGreensClassOfDualGreensClass(C),
               x -> DualSemigroupElementNC(AssociatedSemigroup(C), x));
 end);
 
