@@ -244,9 +244,9 @@ function(S)
       or not (IsTransformationSemigroup(S)
               or IsPartialPermSemigroup(S)
               or IsBipartitionSemigroup(S)
-              or IsBooleanMatSemigroup(S)
               or IsPBRSemigroup(S)
-              or IsMatrixOverSemiringSemigroup(S)) then
+              or IsMatrixOverSemiringSemigroup(S))
+      or IsBooleanMatSemigroup(S) then
      # This method only works for semigroups to which the libsemigroups
      # code applies
     TryNextMethod();

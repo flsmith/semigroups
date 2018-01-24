@@ -62,6 +62,26 @@ static Obj BMAT8_GET(Obj self, Obj x, Obj i, Obj j) {
               : False);
 }
 
+static Obj BMAT8_EQ(Obj self, Obj x, Obj y) {
+  SEMIGROUPS_ASSERT(TNUM_OBJ(x) == T_PKG_OBJ
+                    && t_pkg_obj_subtype(x) == T_BMAT8);
+  SEMIGROUPS_ASSERT(TNUM_OBJ(y) == T_PKG_OBJ
+                    && t_pkg_obj_subtype(y) == T_BMAT8);
+  return (*t_pkg_obj_cpp_class<BMat8*>(x) == *t_pkg_obj_cpp_class<BMat8*>(y)
+              ? True
+              : False);
+}
+
+static Obj BMAT8_LT(Obj self, Obj x, Obj y) {
+  SEMIGROUPS_ASSERT(TNUM_OBJ(x) == T_PKG_OBJ
+                    && t_pkg_obj_subtype(x) == T_BMAT8);
+  SEMIGROUPS_ASSERT(TNUM_OBJ(y) == T_PKG_OBJ
+                    && t_pkg_obj_subtype(y) == T_BMAT8);
+  return (*t_pkg_obj_cpp_class<BMat8*>(x) < *t_pkg_obj_cpp_class<BMat8*>(y)
+              ? True
+              : False);
+}
+
 static Obj BMAT8_TRANSPOSE(Obj self, Obj x) {
   SEMIGROUPS_ASSERT(TNUM_OBJ(x) == T_PKG_OBJ
                     && t_pkg_obj_subtype(x) == T_BMAT8);

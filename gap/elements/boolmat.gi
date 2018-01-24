@@ -34,6 +34,10 @@ SEMIGROUPS.HashFunctionBooleanMat := function(x, data)
   return h + 1;
 end;
 
+SEMIGROUPS.HashFunctionBMat8 := function(x, data)
+  return (BMAT8_TO_INT(x![2]) mod data) + 1;
+end;
+
 SEMIGROUPS.SetBooleanMat := function(x)
   local n, out, i;
   n := Length(x![1]);
@@ -77,119 +81,113 @@ function(mat)
   if (not IsList(mat)) or IsEmpty(mat)
       or not ForAll(mat, IsHomogeneousList) then
     ErrorNoReturn("Semigroups: BooleanMat: usage,\n",
-                  "the argmuent must be a non-empty list ",
+                  "the argument must be a non-empty list ",
                   "of homogeneous lists,");
   elif IsRectangularTable(mat) then #0s and 1s or blists
+    n := Length(mat);
+    if not ForAll(mat, row -> Size(row) = n) then
+        ErrorNoReturn("Semigroups: BooleanMat: usage,\n",
+                      "the argument must represent a ",
+                      "square matrix,");
+    fi;
     if ForAll(mat, row -> ForAll(row, x -> x = 0 or x = 1)) then
       # 0s and 1s
-      n := Length(mat[1]);
-      x := EmptyPlist(n);
-      for i in [1 .. n] do
-        blist := BlistList([1 .. n], []);
-        for j in [1 .. n] do
-          if mat[i][j] = 1 then
-            blist[j] := true;
-          fi;
+      if n <= 8 then
+        x := BMAT8_NEW();
+        for i in [1 .. n] do
+          for j in [1 .. n] do
+            if mat[i][j] = 1 then
+              BMAT8_SET(x, i, j, true);
+            fi;
+          od;
         od;
-        Add(x, blist);
-      od;
-      return MatrixNC(BooleanMatType, x);
+      fi;
+      return Objectify(BMat8Type, [n, x]);
     elif ForAll(mat, row -> ForAll(row, x -> x = true or x = false)) then
-      # blists
-      x := ShallowCopy(mat);
-      for row in x do
-        if not IsBlistRep(row) then
-          ConvertToBlistRep(row);
-        fi;
-      od;
-      return MatrixNC(BooleanMatType, x);
+      #blists
+      if n <= 8 then
+        x := BMAT8_NEW();
+        for i in [1 .. n] do
+          for j in [1 .. n] do
+            BMAT8_SET(x, i, j, mat[i][j]);
+          od;
+        od;
+      fi;
+      return Objectify(BMat8Type, [n, x]);
     fi;
   fi;
-  # successors
+  
+  #successors
   n := Length(mat);
-  x := EmptyPlist(n);
-  for i in [1 .. n] do
-    if not ForAll(mat[i], x -> IsPosInt(x) and x <= n) then
-      ErrorNoReturn("Semigroups: BooleanMat:\n",
-                    "the entries of each list must not exceed ", n, ",");
-    fi;
-    Add(x, BlistList([1 .. n], mat[i]));
-  od;
-  return MatrixNC(BooleanMatType, x);
-end);
-
-InstallMethod(\*, "for boolean matrices", [IsBooleanMat, IsBooleanMat],
-function(x, y)
-  local n, xy, i, j, k;
-
-  n := Minimum(Length(x![1]), Length(y![1]));
-  xy := List([1 .. n], x -> BlistList([1 .. n], []));
-
-  for i in [1 .. n] do
-    for j in [1 .. n] do
-      for k in [1 .. n] do
-        if x![i][k] and y![k][j] then
-          xy![i][j] := true;
-          break;
-        fi;
+  if not ForAll(mat, x -> ForAll(x, y -> IsPosInt(y) and y <= n)) then
+    ErrorNoReturn("Semigroups: BooleanMat:\n",
+                  "the entries of each list must not exceed ", n, ",");
+  fi;
+  
+  if n <= 8 then
+    x := BMAT8_NEW();
+    for i in [1 .. n] do
+      for j in mat[i] do
+        BMAT8_SET(x, i, j, true);
       od;
     od;
-  od;
-  return MatrixNC(x, xy);
+  fi;
+  return Objectify(BMat8Type, [n, x]);
+end);
+
+InstallMethod(\*, "for boolean matrices", [IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
+function(x, y)
+  return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), 
+                   BMAT8_MULTIPLY(x![2], y![2])]);
 end);
 
 InstallMethod(\<, "for boolean matrices",
-[IsBooleanMat, IsBooleanMat],
+[IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
 function(x, y)
-  local n, i;
+  return BMAT8_LT(x![2], y![2]);
+end);
 
-  n := Length(x![1]);
-  if n < Length(y![1]) then
-    return true;
-  elif n > Length(y![1]) then
-    return false;
-  fi;
+InstallMethod(\=, "for BMat8 representatives of boolean matrices",
+[IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
+function(x, y)
+  return BMAT8_EQ(x![2], y![2]);
+end);
 
-  i := 1;
-  while IsBound(x![i]) do
-    # this is the opposite way around than general matrices over semirings
-    # since for some reason true < false in GAP.
-    if x![i] > y![i] then
-      return true;
-    elif x![i] < y![i] then
-      return false;
-    fi;
-    i := i + 1;
-  od;
-  return false;
+InstallMethod(ELM_LIST, "for BMat8 representatives of boolean matrices",
+[IsLibsemigroupsBMat8Rep, IsPosInt],
+function(x, i)
+  return List([1 .. DimensionOfMatrixOverSemiring(x)], j -> BMAT8_GET(x![2], i, j));
 end);
 
 InstallMethod(OneImmutable, "for a boolean mat",
-[IsBooleanMat],
+[IsLibsemigroupsBMat8Rep],
 function(x)
-  local n, id, i;
-
-  n := DimensionOfMatrixOverSemiring(x);
-  id := List([1 .. n], x -> BlistList([1 .. n], []));
-  for i in [1 .. n] do
-    id[i][i] := true;
+  local i, one;
+  one := BMAT8_ONE(x![2]); 
+  for i in [1 .. 8 - DimensionOfMatrixOverSemiring(x)] do
+    BMAT8_SET(one, 9 - i, 9 - i, false);
   od;
-  return MatrixNC(x, id);
+  return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), one]);;
 end);
 
 InstallMethod(RandomMatrixCons, "for boolean matrices and a pos int",
 [IsBooleanMat, IsPosInt],
 function(filter, n)
-  local x, i, j;
+  if n <= 8 then
+    return Objectify(BMat8Type, [n, BMAT8_RANDOM(n)]);
+  fi;
+end);
 
-  x := List([1 .. n], x -> BlistList([1 .. n], []));
-  for i in [1 .. n] do
-    for j in [1 .. n] do
-      x[i][j] := Random([true, false]);
-    od;
-  od;
-  Perform(x, ConvertToBlistRep);
-  return MatrixNC(BooleanMatType, x);
+InstallMethod(TransposedMat, "for BMat8 representatives of boolean matrices",
+[IsLibsemigroupsBMat8Rep],
+function(x)
+  return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), BMAT8_TRANSPOSE(x)]);
+end);
+
+InstallMethod(DimensionOfMatrixOverSemiring, "for BMat8 reprsentatives of boolean matrices",
+[IsLibsemigroupsBMat8Rep],
+function(x)
+  return x![1];
 end);
 
 #############################################################################
@@ -470,7 +468,7 @@ function(x, n)
   for i in [1 .. n] do
     out[i][i ^ x] := true;
   od;
-  return MatrixNC(BooleanMatType, out);
+  return BooleanMat(out);
 end);
 
 InstallMethod(AsBooleanMat, "for a perm",
@@ -540,6 +538,12 @@ InstallMethod(ChooseHashFunction, "for a boolean matrix",
   function(x, hashlen)
   return rec(func := SEMIGROUPS.HashFunctionBooleanMat,
              data := hashlen);
+end);
+
+InstallMethod(ChooseHashFunction, "for a BMat8 representation of a boolean matrix",
+[IsLibsemigroupsBMat8Rep, IsInt],
+function(x, hashlen)
+  return rec(func := SEMIGROUPS.HashFunctionBMat8, data := hashlen);
 end);
 
 InstallMethod(CanonicalBooleanMat, "for boolean mat",

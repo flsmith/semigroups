@@ -43,7 +43,7 @@ enum en_semi_t {
   TRANS4,
   PPERM2,
   PPERM4,
-  BOOL_MAT,
+  //BOOL_MAT,
   BIPART,
   MAX_PLUS_MAT,
   MIN_PLUS_MAT,

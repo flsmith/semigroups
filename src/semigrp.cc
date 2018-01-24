@@ -291,10 +291,12 @@ Converter* en_semi_init_converter(en_semi_obj_t es) {
       converter = new BipartConverter();
       break;
     }
-    case BOOL_MAT: {
+    /*
+      case BOOL_MAT: {
       converter = new BoolMatConverter();
       break;
     }
+    */
     case MAX_PLUS_MAT: {
       converter = new MatrixOverSemiringConverter<MatrixOverSemiring<int64_t>>(
           new MaxPlusSemiring(), Ninfinity, MaxPlusMatrixType);
@@ -415,9 +417,12 @@ en_semi_obj_t semi_obj_init_en_semi(gap_semigroup_t so) {
   } else if (TNUM_OBJ(x) == T_BIPART) {
     type = BIPART;
     deg  = INT_INTOBJ(BIPART_DEGREE(0L, x));
-  } else if (CALL_1ARGS(IsBooleanMat, x) == True) {
+  /*
+  } 
+    else if (CALL_1ARGS(IsBooleanMat, x) == True) {
     type = BOOL_MAT;
     deg  = INT_INTOBJ(CALL_1ARGS(DimensionOfMatrixOverSemiring, x));
+  */
   } else if (CALL_1ARGS(IsMaxPlusMatrix, x) == True) {
     type = MAX_PLUS_MAT;
     deg  = INT_INTOBJ(CALL_1ARGS(DimensionOfMatrixOverSemiring, x));

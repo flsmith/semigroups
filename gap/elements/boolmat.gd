@@ -16,29 +16,33 @@
 
 DeclareCategory("IsBooleanMat", IsMatrixOverSemiring);
 
-# If x is in IsLibsemigroupsBMat8Rep, then x![1] is the TPkgObj containing the
+# If x is in IsLibsemigroupsBMat8Rep, then x![1] is the dimension
+#of x and x![2] is the TPkgObj containing the
 # libsemigroups C++ BMat8 object corresponding to x. This is for boolean mats
 # up to dimension 8 only.
 DeclareRepresentation("IsLibsemigroupsBMat8Rep",
-                      IsMatrixOverSemiring and IsPositionalObjectRep, 
-                      [1]);
+                      IsBooleanMat and IsPositionalObjectRep,
+                      [2]);
 
-# If x is in IsLibsemigroupsBooleanMatRep, then x![1] is the TPkgObj containing
+# If x is in IsLibsemigroupsBooleanMatRep, then x![1] is the dimension
+# of x and x![2] is the TPkgObj containing
 # a pointer to the  libsemigroups C++ BooleanMat object corresponding to x.
 # This is for boolean mats of dimension >= 9 only.
 DeclareRepresentation("IsLibsemigroupsBooleanMatRep",
-                      IsMatrixOverSemiring and IsPositionalObjectRep, 
-                      [1]);
+                      IsBooleanMat and IsPositionalObjectRep,
+                      [2]);
 
 DeclareCategoryCollections("IsBooleanMat");
 DeclareCategoryCollections("IsBooleanMatCollection");
 
-BindGlobal("BooleanMatType",
-           NewType(NewFamily("BooleanMatFamily",
+BindGlobal("BooleanMatFamily", NewFamily("BooleanMatFamily",
                              IsBooleanMat,
                              CanEasilySortElements,
-                             CanEasilySortElements),
-                   IsBooleanMat));
+                             CanEasilySortElements));
+
+BindGlobal("BooleanMatType", NewType(BooleanMatFamily, IsBooleanMat));
+
+BindGlobal("BMat8Type", NewType(BooleanMatFamily, IsLibsemigroupsBMat8Rep));
 
 DeclareGlobalFunction("BooleanMat");
 
