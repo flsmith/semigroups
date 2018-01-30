@@ -17,7 +17,7 @@
 DeclareCategory("IsBooleanMat", IsMatrixOverSemiring);
 
 # If x is in IsLibsemigroupsBMat8Rep, then x![1] is the dimension
-#of x and x![2] is the TPkgObj containing the
+# of x and x![2] is the TPkgObj containing the
 # libsemigroups C++ BMat8 object corresponding to x. This is for boolean mats
 # up to dimension 8 only.
 DeclareRepresentation("IsLibsemigroupsBMat8Rep",

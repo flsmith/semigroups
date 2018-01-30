@@ -20,11 +20,11 @@
 SEMIGROUPS.HashFunctionBooleanMat := function(x, data)
   local n, h, i, j;
 
-  n := Length(x![1]);
+  n := DimensionOfMatrixOverSemiring(x);
   h := 0;
   for i in [1 .. n] do
     for j in [1 .. n] do
-      if x![i][j] then
+      if x[i][j] then
         h := ((h * 2) + 1) mod data;
       else
         h := (h * 2) mod data;
@@ -55,7 +55,7 @@ SEMIGROUPS.BooleanMatSet := function(set)
   for i in [1 .. n] do
     x[i] := BlistNumber(set[i] - (i - 1) * 2 ^ n, n);
   od;
-  return MatrixNC(BooleanMatType, x);
+  return BooleanMat(x);
 end;
 
 #############################################################################
@@ -76,16 +76,22 @@ InstallMethod(SEMIGROUPS_TypeOfMatrixOverSemiringCons,
 
 InstallGlobalFunction(BooleanMat,
 function(mat)
-  local n, x, blist, i, j, row;
+  local i, j, n, type, x;
+  
+  type := BooleanMatType;
+  n := Length(mat);
+  if n <= 8 then
+    type := BMat8Type;
+  fi;
 
-  if (not IsList(mat)) or IsEmpty(mat)
+  if (not IsPList(mat)) or IsEmpty(mat)
       or not ForAll(mat, IsHomogeneousList) then
     ErrorNoReturn("Semigroups: BooleanMat: usage,\n",
-                  "the argument must be a non-empty list ",
+                  "the argument must be a non-empty plain list ",
                   "of homogeneous lists,");
   elif IsRectangularTable(mat) then #0s and 1s or blists
     n := Length(mat);
-    if not ForAll(mat, row -> Size(row) = n) then
+    if not Size(mat[1]) = n then
         ErrorNoReturn("Semigroups: BooleanMat: usage,\n",
                       "the argument must represent a ",
                       "square matrix,");
@@ -101,8 +107,11 @@ function(mat)
             fi;
           od;
         od;
+      else
+        x := BOOLEAN_MAT_NEW(List(mat, 
+                row -> BlistList(PositionsProperty(row, x -> x = 1))));
       fi;
-      return Objectify(BMat8Type, [n, x]);
+      return Objectify(type, [n, x]);
     elif ForAll(mat, row -> ForAll(row, x -> x = true or x = false)) then
       #blists
       if n <= 8 then
@@ -112,18 +121,20 @@ function(mat)
             BMAT8_SET(x, i, j, mat[i][j]);
           od;
         od;
+      else
+        x := BOOLEAN_MAT_NEW(mat); 
       fi;
-      return Objectify(BMat8Type, [n, x]);
+      return Objectify(type, [n, x]);
     fi;
   fi;
   
-  #successors
+  # mat is a list of successors
   n := Length(mat);
   if not ForAll(mat, x -> ForAll(x, y -> IsPosInt(y) and y <= n)) then
     ErrorNoReturn("Semigroups: BooleanMat:\n",
                   "the entries of each list must not exceed ", n, ",");
   fi;
-  
+ 
   if n <= 8 then
     x := BMAT8_NEW();
     for i in [1 .. n] do
@@ -131,17 +142,70 @@ function(mat)
         BMAT8_SET(x, i, j, true);
       od;
     od;
+  else 
+    x := BOOLEAN_MAT_NEW(List(mat, row -> BlistList(row)));
   fi;
-  return Objectify(BMat8Type, [n, x]);
+  return Objectify(type, [n, x]);
 end);
 
-InstallMethod(\*, "for boolean matrices", [IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
+InstallMethod(\*, "for boolean matrices", [IsBooleanMat, IsBooleanMat],
 function(x, y)
-  return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), 
-                   BMAT8_MULTIPLY(x![2], y![2])]);
+  return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x),
+                   BOOLEAN_MAT_MULTIPLY(x![2], y![2])]);
 end);
 
 InstallMethod(\<, "for boolean matrices",
+[IsBooleanMat, IsBooleanMat],
+function(x, y)
+  return BOOLEAN_MAT_LT(x![2], y![2]);
+end);
+
+InstallMethod(\=, "for boolean matrices",
+[IsBooleanMat, IsBooleanMat],
+function(x, y)
+  return BOOLEAN_MAT_EQ(x![2], y![2]);
+end);
+
+InstallMethod(ELM_LIST, "for boolean matrices",
+[IsBooleanMat, IsPosInt],
+function(x, i)
+  return List([1 .. DimensionOfMatrixOverSemiring(x)], j -> BOOLEAN_MAT_GET(x![2], i, j));
+end);
+
+InstallMethod(OneImmutable, "for a boolean mat",
+[IsBooleanMat],
+function(x)
+  return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x), BOOLEAN_MAT_ONE(x)]);;
+end);
+
+InstallMethod(TransposedMat, "for a boolean mat",
+[IsBooleanMat],
+function(x)
+  return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x), BOOLEAN_MAT_TRANSPOSE(x)]);
+end);
+
+InstallMethod(DimensionOfMatrixOverSemiring, "for a boolean mat",
+[IsBooleanMat],
+function(x)
+  return x![1];
+end);
+
+InstallMethod(RandomMatrixCons, "for boolean matrices and a pos int",
+[IsBooleanMat, IsPosInt],
+function(filter, n)
+  if n <= 8 then
+    return Objectify(BMat8Type, [n, BMAT8_RANDOM(n)]);
+  fi;
+end);
+
+InstallMethod(\*, "for BMat8 representatives of boolean matrices",
+[IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
+function(x, y)
+  return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x),
+                   BMAT8_MULTIPLY(x![2], y![2])]);
+end);
+
+InstallMethod(\<, "for BMat8 representatives of boolean matrices",
 [IsLibsemigroupsBMat8Rep, IsLibsemigroupsBMat8Rep],
 function(x, y)
   return BMAT8_LT(x![2], y![2]);
@@ -159,7 +223,7 @@ function(x, i)
   return List([1 .. DimensionOfMatrixOverSemiring(x)], j -> BMAT8_GET(x![2], i, j));
 end);
 
-InstallMethod(OneImmutable, "for a boolean mat",
+InstallMethod(OneImmutable, "for a BMat8 represenative of a boolean matix",
 [IsLibsemigroupsBMat8Rep],
 function(x)
   local i, one;
@@ -170,24 +234,10 @@ function(x)
   return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), one]);;
 end);
 
-InstallMethod(RandomMatrixCons, "for boolean matrices and a pos int",
-[IsBooleanMat, IsPosInt],
-function(filter, n)
-  if n <= 8 then
-    return Objectify(BMat8Type, [n, BMAT8_RANDOM(n)]);
-  fi;
-end);
-
 InstallMethod(TransposedMat, "for BMat8 representatives of boolean matrices",
 [IsLibsemigroupsBMat8Rep],
 function(x)
   return Objectify(BMat8Type, [DimensionOfMatrixOverSemiring(x), BMAT8_TRANSPOSE(x)]);
-end);
-
-InstallMethod(DimensionOfMatrixOverSemiring, "for BMat8 reprsentatives of boolean matrices",
-[IsLibsemigroupsBMat8Rep],
-function(x)
-  return x![1];
 end);
 
 #############################################################################
@@ -393,12 +443,7 @@ function(digraph)
   n   := DigraphNrVertices(digraph);
   out := OutNeighbours(digraph);
 
-  mat := EmptyPlist(n);
-  X   := [1 .. DigraphNrVertices(digraph)];
-  for i in X do
-    mat[i] := BlistList(X, out[i]);
-  od;
-  return MatrixNC(BooleanMatType, mat);
+  return BooleanMat(out);
 end);
 
 InstallMethod(AsBooleanMat, "for a partitioned binary relation",
