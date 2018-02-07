@@ -108,7 +108,7 @@ function(mat)
           od;
         od;
       else
-        x := BOOLEAN_MAT_NEW(List(mat, 
+        x := BOOLEANMAT_NEW(List(mat, 
                 row -> BlistList(PositionsProperty(row, x -> x = 1))));
       fi;
       return Objectify(type, [n, x]);
@@ -122,7 +122,7 @@ function(mat)
           od;
         od;
       else
-        x := BOOLEAN_MAT_NEW(mat); 
+        x := BOOLEANMAT_NEW(mat); 
       fi;
       return Objectify(type, [n, x]);
     fi;
@@ -143,7 +143,7 @@ function(mat)
       od;
     od;
   else 
-    x := BOOLEAN_MAT_NEW(List(mat, row -> BlistList(row)));
+    x := BOOLEANMAT_NEW(List(mat, row -> BlistList(row)));
   fi;
   return Objectify(type, [n, x]);
 end);
@@ -151,13 +151,13 @@ end);
 InstallMethod(\*, "for boolean matrices", [IsBooleanMat, IsBooleanMat],
 function(x, y)
   return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x),
-                   BOOLEAN_MAT_MULTIPLY(x![2], y![2])]);
+                   BOOLEANMAT_MULTIPLY(x![2], y![2])]);
 end);
 
 InstallMethod(\<, "for boolean matrices",
 [IsBooleanMat, IsBooleanMat],
 function(x, y)
-  return BOOLEAN_MAT_LT(x![2], y![2]);
+  return ELEMENT_LT(x![2], y![2]);
 end);
 
 InstallMethod(\=, "for boolean matrices",
@@ -169,13 +169,13 @@ end);
 InstallMethod(ELM_LIST, "for boolean matrices",
 [IsBooleanMat, IsPosInt],
 function(x, i)
-  return List([1 .. DimensionOfMatrixOverSemiring(x)], j -> BOOLEAN_MAT_GET(x![2], i, j));
+  return List([1 .. DimensionOfMatrixOverSemiring(x)], j -> BOOLEANMAT_GET(x![2], i, j));
 end);
 
 InstallMethod(OneImmutable, "for a boolean mat",
 [IsBooleanMat],
 function(x)
-  return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x), BOOLEAN_MAT_ONE(x)]);;
+  return Objectify(BooleanMatType, [DimensionOfMatrixOverSemiring(x), ELEMENT_ONE(x)]);;
 end);
 
 InstallMethod(TransposedMat, "for a boolean mat",
