@@ -1,0 +1,20 @@
+#############################################################################
+##
+#W  dual.xml
+#Y  Copyright (C) 2011-14                                       Finn Smith 
+##
+##  Licensing information can be found in the README file of this package.
+##
+#############################################################################
+##
+
+<#GAPDoc Label="DualSemigroup">
+  <ManSection>
+    <Attr Name = "DualSemigroup" Arg = "sgrp"/>
+    <Returns>The dual semigroup of the given semigroup.</Returns>
+    <Description>
+      This method returns a representation of the dual semigroup of 
+      <A>sgrp</A>. 
+      
+  </ManSection>
+<#/GAPDoc>

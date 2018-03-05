@@ -41,12 +41,12 @@ function(S)
 
   if HasGeneratorsOfSemigroup(S) then
     SetGeneratorsOfSemigroup(dual, List(GeneratorsOfSemigroup(S),
-                                        x -> DualSemigroupElement(dual, x)));
+                                        x -> DualSemigroupElementNC(dual, x)));
   fi;
 
   if HasGeneratorsOfMonoid(S) then
     SetGeneratorsOfMonoid(dual, List(GeneratorsOfMonoid(S),
-                                        x -> DualSemigroupElement(dual, x)));
+                                        x -> DualSemigroupElementNC(dual, x)));
   fi;
 
   return dual;
