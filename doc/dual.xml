@@ -14,7 +14,50 @@
     <Returns>The dual semigroup of the given semigroup.</Returns>
     <Description>
       This method returns a representation of the dual semigroup of 
-      <A>sgrp</A>. 
+      <A>sgrp</A>. The dual semigroup of a semigroup <A>S</A> is the
+      antisomorphic semigroup with the same underlying set as <A>S</A>,
+      where multiplication is reversed.
+<Example>
+<![CDATA[
+gap> S := Semigroup([Transformation([1, 4, 3, 2, 2]), Transformation([5, 4, 4, 1, 2])]);;
+gap> D := DualSemigroup(S);
+<dual semigroup of <transformation semigroup of degree 5 with 2 generators>>
+gap> Size(S) = Size(D);
+true
+gap> NrDClasses(S) = NrDClasses(D);
+true
+]]> </Example> </Description> </ManSection>
+<#/GAPDoc>
+
+<#GAPDoc Label="DualSemigroupElement">
+  <ManSection>
+    <Func Name= "DualSemigroupElement" Arg = "sgrp, elt"/>
+    <Returns>The corresponding element in the dual semigroup.</Returns>
+    <Description>
+      This method returns a representation of an element of the
+      dual semigroup of <A>sgrp</A>.    
+<Example>
+<![CDATA[
+gap> S := Semigroup([Transformation([1, 4, 3, 2, 2]), Transformation([5, 4, 4, 1, 2])]);;
+gap> D := DualSemigroup(S);
+<dual semigroup of <transformation semigroup of degree 5 with 2 generators>>
+gap> x := Representative(DClasses(S)[1]);; y := Representative(DClasses(S)[2]);;
+gap> dx := DualSemigroupElement(D, x);; dy := DualSemigroupElement(D, y);;
+gap> dx * dy = DualSemigroupElement(D, y * x);
+true
+gap> dx * dy = DualSemigroupElement(D, x * y);
+false
+]]> </Example> </Description> </ManSection>
+<#/GAPDoc>
+
+<#GAPDoc Label="IsDualSemigroupElement">
+  <ManSection>
+    <Filt Name = "IsDualSemigroupElement" Type = "Category" Arg="elt"/>
+    <Returns>Returns true if <A>elt</A> </Returns>
+    <Description>
       
-  </ManSection>
+<Example>
+<![CDATA[
+  
+]]>  </Example> </Description> </ManSection>
 <#/GAPDoc>
