@@ -17,6 +17,9 @@
       <A>sgrp</A>. The dual semigroup of a semigroup <A>S</A> is the
       antisomorphic semigroup with the same underlying set as <A>S</A>,
       where multiplication is reversed.
+      Note that the dual <A>D</A> of a semigroup <A>S</A> created using 
+      <Ref Func="DualSemigroup"> has the opposite value of 
+      <Ref Filt="IsDualSemigroup"> to <A>S</A>.
 <Example>
 <![CDATA[
 gap> S := Semigroup([Transformation([1, 4, 3, 2, 2]), Transformation([5, 4, 4, 1, 2])]);;
@@ -53,11 +56,88 @@ false
 <#GAPDoc Label="IsDualSemigroupElement">
   <ManSection>
     <Filt Name = "IsDualSemigroupElement" Type = "Category" Arg="elt"/>
-    <Returns>Returns true if <A>elt</A> </Returns>
+    <Returns>Returns true if <A>elt</A> has the representation of a dual semigroup element.</Returns>
     <Description>
-      
+      Elements of a dual semigroup created using
+      <Ref Func = "DualSemigroupElement"> normally lie in this
+      category. The exception is dual elements to elements that already
+      lie in the category.
 <Example>
 <![CDATA[
-  
+gap> S := SingularPartitionMonoid(4);;
+gap> D := DualSemigroup(S);;
+gap> s := GeneratorsOfSemigroup(S)[1];;
+gap> t := DualSemigroupElement(D, s);
+<<block bijection: [ 1, 2, -1, -2 ], [ 3, -3 ], [ 4, -4 ]>
+  in the dual semigroup>
+gap> IsDualSemigroupElement(t);
+true
+gap> x := DualSemigroupElement(S, t);
+<block bijection: [ 1, 2, -1, -2 ], [ 3, -3 ], [ 4, -4 ]>
+gap> IsDualSemigroupElement(x);
+false
+]]>  </Example> </Description> </ManSection>
+<#/GAPDoc>
+
+<#GAPDoc Label="IsDualSemigroup">
+  <ManSection>
+    <Filt Name = "IsDualSemigroup" Type = "Category" Arg="sgrp"/>
+    <Returns>Returns true if <A>sgrp</A> is represented as
+      a dual semigroup.</Returns>
+    <Description>
+      Semigroups created using <Ref Func="DualSemigroup">
+      normally lie in this category. The exception is dual
+      semigroups to semigroups that already lie in the category.
+<Example>
+<![CDATA[
+gap> S := Semigroup([Transformation([3, 5, 1, 1, 2]),
+> Transformation([1, 2, 4, 4, 3])]);
+<transformation semigroup of degree 5 with 2 generators>
+gap> D := DualSemigroup(S);
+<dual semigroup of <transformation semigroup of degree 5 with 2 generators>>
+gap> IsDualSemigroup(D);
+true
+gap> R := DualSemigroup(D);
+<transformation semigroup of degree 5 with 2 generators>
+gap> IsDualSemigroup(R);
+false
+gap> R = S;
+true
+gap> T := Range(IsomorphismTransformationSemigroup(D));
+<transformation semigroup of size 16, degree 17 with 2 generators>
+gap> IsDualSemigroup(T);
+false
+]]>  </Example> </Description> </ManSection>
+<#/GAPDoc>
+
+<#GAPDoc Label="IsDualSemigroupGreensClass">
+  <ManSection>
+    <Filt Name = "IsDualSemigroupGreensClass" Type = "Category" Arg="X"/>
+    <Filt Name = "IsDualSemigroupGreensLClass" Type = "Category" Arg="X"/>
+    <Filt Name = "IsDualSemigroupGreensRClass" Type = "Category" Arg="X"/>
+    <Filt Name = "IsDualSemigroupGreensDClass" Type = "Category" Arg="X"/>
+    <Description>
+      Semigroups created using <Ref Func="DualSemigroup">
+      normally lie in this category. The exception is dual
+      semigroups to semigroups that already lie in the category.
+<Example>
+<![CDATA[
+gap> S := Semigroup([Transformation([3, 5, 1, 1, 2]),
+> Transformation([1, 2, 4, 4, 3])]);
+<transformation semigroup of degree 5 with 2 generators>
+gap> D := DualSemigroup(S);
+<dual semigroup of <transformation semigroup of degree 5 with 2 generators>>
+gap> IsDualSemigroup(D);
+true
+gap> R := DualSemigroup(D);
+<transformation semigroup of degree 5 with 2 generators>
+gap> IsDualSemigroup(R);
+false
+gap> R = S;
+true
+gap> T := Range(IsomorphismTransformationSemigroup(D));
+<transformation semigroup of size 16, degree 17 with 2 generators>
+gap> IsDualSemigroup(T);
+false
 ]]>  </Example> </Description> </ManSection>
 <#/GAPDoc>

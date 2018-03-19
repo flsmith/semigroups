@@ -104,6 +104,11 @@ function(S)
   return SEMIGROUPS.GreensDualClasses(S, IsDualGreensRClass);  
 end);
 
+InstallMethod(GreensHClasses, "for a dual semigroup",
+[IsDualSemigroup],
+function(S)
+  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensHClass);
+
 SEMIGROUPS.GreensDualClasses := function(S, type)
   local class, classes, D, dualclass, dualclasses, fam, rel;
 
@@ -120,10 +125,13 @@ SEMIGROUPS.GreensDualClasses := function(S, type)
   elif type = IsDualGreensRClass then
     classes := GreensLClasses(DualSemigroup(S));
     rel := GreensRRelation(S);
+  elif type = IsDualGreensHClass then
+    classes = GreensHClasses(DualSemigroup(S));
+    rel := GreensHRelation(S);
   else
     ErrorNoReturn("Semigroups: SEMIGROUPS.GreensDualClasses: \n",
                   "the second argument should be one of ",
-                  "IsDualGreensXClass, where X = D, L, or R,");
+                  "IsDualGreensXClass, where X = D, L, R, or H,");
   fi;
 
   for class in classes do

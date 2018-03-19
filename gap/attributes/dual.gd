@@ -24,4 +24,5 @@ DeclareCategory("IsDualGreensClass", IsGreensClass);
 DeclareCategory("IsDualGreensDClass", IsDualGreensClass and IsGreensDClass);
 DeclareCategory("IsDualGreensLClass", IsDualGreensClass and IsGreensLClass);
 DeclareCategory("IsDualGreensRClass", IsDualGreensClass and IsGreensRClass);
+DeclareCategory("IsDualGreensHClass", IsDualGreensClass and IsGreensHClass);
 DeclareAttribute("UnderlyingGreensClassOfDualGreensClass", IsDualGreensClass);
