@@ -72,6 +72,42 @@ gap> for i in [1 .. Size(DS) - 1] do
 > fi;
 > od;
 
+#T# Green's classes of dual semigroups
+gap> S := Semigroup([Transformation([2,6,3,2,4,2]),
+> Transformation([5,5,6,1,4,5]),
+> Transformation([5,3,1,6,4,5])]);;
+gap> T := DualSemigroup(S);;
+gap> ForAll(DClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) = 
+> GreensDClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+true
+gap> ForAll(LClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) =
+> GreensLClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+false
+gap> ForAll(LClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) =
+> GreensRClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+true
+gap> ForAll(RClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) =
+> GreensRClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+false
+gap> ForAll(RClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) =
+> GreensLClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+true
+gap> ForAll(HClasses(T), x -> UnderlyingGreensClassOfDualGreensClass(x) =
+> GreensHClassOfElement(S, DualSemigroupElement(S, Representative(x))));
+true
+gap> ForAll(DClasses(T), x -> List(x, y -> DualSemigroupElement(S, y)) =
+> AsList(UnderlyingGreensClassOfDualGreensClass(x)));
+true
+gap> ForAll(LClasses(T), x -> List(x, y -> DualSemigroupElement(S, y)) =
+> AsList(UnderlyingGreensClassOfDualGreensClass(x)));
+true
+gap> ForAll(RClasses(T), x -> List(x, y -> DualSemigroupElement(S, y)) =
+> AsList(UnderlyingGreensClassOfDualGreensClass(x)));
+true
+gap> ForAll(HClasses(T), x -> List(x, y -> DualSemigroupElement(S, y)) =
+> AsList(UnderlyingGreensClassOfDualGreensClass(x)));
+true
+
 #
 gap> SEMIGROUPS.StopTest();
 gap> STOP_TEST("Semigroups package: standard/dual.tst");
