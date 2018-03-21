@@ -107,6 +107,68 @@ true
 gap> ForAll(HClasses(T), x -> List(x, y -> DualSemigroupElement(S, y)) =
 > AsList(UnderlyingGreensClassOfDualGreensClass(x)));
 true
+gap> AsList(DClasses(T)[7]);
+[ <Transformation( [ 4, 4, 5, 5, 1, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 5, 6, 6, 4, 5 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 5, 1, 1, 4, 5 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 6, 4, 4, 5, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 1, 1, 4, 4, 5, 1 ] ) in the dual semigroup>, 
+  <Transformation( [ 4, 4, 5, 5, 6, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 1, 5, 4, 4, 5, 1 ] ) in the dual semigroup>, 
+  <Transformation( [ 4, 6, 5, 5, 6, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 4, 1, 5, 5, 1, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 4, 6, 6, 4, 5 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 4, 1, 1, 4, 5 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 5, 4, 4, 5, 6 ] ) in the dual semigroup> ]
+gap> AsList(LClasses(T)[4]);
+[ <Transformation( [ 6, 2, 3, 6, 2, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 4, 3, 2, 4, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 1, 5, 3, 1, 5, 1 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 2, 6, 3, 2, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 4, 2, 3, 4, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 5, 1, 3, 5, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 3, 2, 6, 3, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 3, 4, 2, 3, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 1, 3, 5, 1, 3, 1 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 3, 6, 2, 3, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 4, 3, 2, 4, 3, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 3, 1, 5, 3, 5 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 6, 2, 3, 6, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 2, 4, 3, 2, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 1, 5, 3, 1, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 6, 3, 2, 6, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 4, 2, 3, 4, 2, 4 ] ) in the dual semigroup>, 
+  <Transformation( [ 5, 1, 3, 5, 1, 5 ] ) in the dual semigroup> ]
+gap> AsList(RClasses(T)[4]);
+[ <Transformation( [ 6, 2, 3, 6, 2, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 2, 6, 3, 2, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 3, 2, 6, 3, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 3, 6, 2, 3, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 6, 2, 3, 6, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 6, 3, 2, 6, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 3, 6, 6, 6, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 6, 3, 3, 3, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 2, 6, 6, 6, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 6, 2, 2, 2, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 2, 3, 3, 3, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 3, 2, 2, 2, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 2, 6, 3, 6, 3 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 2, 3, 6, 3, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 3, 6, 2, 6, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 6, 3, 2, 6, 2, 6 ] ) in the dual semigroup>, 
+  <Transformation( [ 2, 6, 3, 2, 3, 2 ] ) in the dual semigroup>, 
+  <Transformation( [ 3, 6, 2, 3, 2, 3 ] ) in the dual semigroup> ]
+
+# Froidure Pin 
+gap> S := Semigroup([Transformation([2,6,3,2,4,2]),
+> Transformation([5,5,6,1,4,5]),
+> Transformation([5,3,1,6,4,5])]);;
+gap> T := DualSemigroup(S);;
+gap> FroidurePinExtendedAlg(T);;
+gap> HasLeftCayleyGraphSemigroup(T);
+true
+gap> HasSize(T);
+true
 
 #
 gap> SEMIGROUPS.StopTest();

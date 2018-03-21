@@ -18,6 +18,7 @@ function(S)
   dual := Objectify(NewType(CollectionsFamily(fam),
                             IsWholeFamily and 
                             IsDualSemigroup and
+                            IsEnumerableSemigroupRep and
                             IsAttributeStoringRep),
                     rec());
 
@@ -35,8 +36,6 @@ function(S)
     SetIsFinite(dual, IsFinite(S));
   fi;
 
-  
-  # this might turn out to be a bad idea
   SetDualSemigroup(dual, S);
 
   if HasGeneratorsOfSemigroup(S) then
@@ -86,72 +85,70 @@ end);
 ## Green's relations
 ################################################################################
 
-InstallMethod(GreensDClasses, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensDClass);  
-end);
-
-InstallMethod(GreensLClasses, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensLClass);  
-end);
-
-InstallMethod(GreensRClasses, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensRClass);  
-end);
-
-InstallMethod(GreensHClasses, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensHClass);
-end);
-
-SEMIGROUPS.GreensDualClasses := function(S, type)
-  local class, classes, D, dualclass, dualclasses, fam, rel;
-
-  dualclasses := [];
-
-  fam := FamilyObj(DualSemigroupElement(S, Representative(DualSemigroup(S))));
-  
-  if type = IsDualGreensDClass then
-    classes := GreensDClasses(DualSemigroup(S));
-    rel := GreensDRelation(S);
-  elif type = IsDualGreensLClass then
-    classes := GreensRClasses(DualSemigroup(S));
-    rel := GreensLRelation(S);
-  elif type = IsDualGreensRClass then
-    classes := GreensLClasses(DualSemigroup(S));
-    rel := GreensRRelation(S);
-  elif type = IsDualGreensHClass then
-    classes := GreensHClasses(DualSemigroup(S));
-    rel := GreensHRelation(S);
-  else
-    ErrorNoReturn("Semigroups: SEMIGROUPS.GreensDualClasses: \n",
-                  "the second argument should be one of ",
-                  "IsDualGreensXClass, where X = D, L, R, or H,");
-  fi;
-
-  for class in classes do
-    dualclass := Objectify(NewType(CollectionsFamily(fam),
-                                    type and
-                                    IsEquivalenceClass and 
-                                    IsEquivalenceClassDefaultRep), 
-                           rec());
-
-    SetEquivalenceClassRelation(dualclass, rel);
-    SetAssociatedSemigroup(dualclass, S);
-    SetUnderlyingGreensClassOfDualGreensClass(dualclass, class);
-
-    Add(dualclasses, dualclass);
-  od;
-  return dualclasses;
-end; 
-
-
+#InstallMethod(GreensDClasses, "for a dual semigroup",
+#[IsDualSemigroup],
+#function(S)
+#  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensDClass);  
+#end);
+#
+#InstallMethod(GreensLClasses, "for a dual semigroup",
+#[IsDualSemigroup],
+#function(S)
+#  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensLClass);  
+#end);
+#
+#InstallMethod(GreensRClasses, "for a dual semigroup",
+#[IsDualSemigroup],
+#function(S)
+#  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensRClass);  
+#end);
+#
+#InstallMethod(GreensHClasses, "for a dual semigroup",
+#[IsDualSemigroup],
+#function(S)
+#  return SEMIGROUPS.GreensDualClasses(S, IsDualGreensHClass);
+#end);
+#
+#SEMIGROUPS.GreensDualClasses := function(S, type)
+#  local class, classes, D, dualclass, dualclasses, fam, rel;
+#
+#  dualclasses := [];
+#
+#  fam := FamilyObj(DualSemigroupElement(S, Representative(DualSemigroup(S))));
+#  
+#  if type = IsDualGreensDClass then
+#    classes := GreensDClasses(DualSemigroup(S));
+#    rel := GreensDRelation(S);
+#  elif type = IsDualGreensLClass then
+#    classes := GreensRClasses(DualSemigroup(S));
+#    rel := GreensLRelation(S);
+#  elif type = IsDualGreensRClass then
+#    classes := GreensLClasses(DualSemigroup(S));
+#    rel := GreensRRelation(S);
+#  elif type = IsDualGreensHClass then
+#    classes := GreensHClasses(DualSemigroup(S));
+#    rel := GreensHRelation(S);
+#  else
+#    ErrorNoReturn("Semigroups: SEMIGROUPS.GreensDualClasses: \n",
+#                  "the second argument should be one of ",
+#                  "IsDualGreensXClass, where X = D, L, R, or H,");
+#  fi;
+#
+#  for class in classes do
+#    dualclass := Objectify(NewType(CollectionsFamily(fam),
+#                                    type and
+#                                    IsEquivalenceClass and 
+#                                    IsEquivalenceClassDefaultRep), 
+#                           rec());
+#
+#    SetEquivalenceClassRelation(dualclass, rel);
+#    SetAssociatedSemigroup(dualclass, S);
+#    SetUnderlyingGreensClassOfDualGreensClass(dualclass, class);
+#
+#    Add(dualclasses, dualclass);
+#  od;
+#  return dualclasses;
+#end; 
 
 InstallMethod(Representative, "for a Greens's class of a dual semigroup",
 [IsDualGreensClass],
@@ -274,4 +271,15 @@ function(S)
   Print("<dual semigroup of ",
         ViewString(DualSemigroup(S)),
         ">");
+end);
+
+InstallMethod(ChooseHashFunction, "for a dual semigroup element and int",
+[IsDualSemigroupElement, IsInt],
+function(x, data)
+  local H, hashfunc;
+  H := ChooseHashFunction(x![1], data);
+  hashfunc := function(a, b)
+    return H.func(a![1], b);
+  end;
+  return rec(func := hashfunc, data := H.data);
 end);
