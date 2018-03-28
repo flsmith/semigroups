@@ -12,10 +12,13 @@
 DeclareCategory("IsDualSemigroupElement", IsAssociativeElement);
 DeclareCategoryCollections("IsDualSemigroupElement");
 DeclareAttribute("DualSemigroup", IsSemigroup);
-DeclareSynonym("IsDualSemigroup", IsSemigroup and IsDualSemigroupElementCollection);
+DeclareSynonym("IsDualSemigroup", IsSemigroup and
+                                  IsDualSemigroupElementCollection);
 DeclareAttribute("TypeDualSemigroupElements", IsDualSemigroup);
 
 DeclareAttribute("DualSemigroupOfFamily", IsFamily);
 
 DeclareGlobalFunction("DualSemigroupElement");
 DeclareGlobalFunction("DualSemigroupElementNC");
+
+DeclareAttribute("AntiIsomorphismDualSemigroup", IsSemigroup);

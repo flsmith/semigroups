@@ -360,6 +360,10 @@ true]]></Log>
     <#Include Label = "InverseSubsemigroupByProperty">
     <#Include Label = "DirectProduct">
     <#Include Label = "WreathProduct">
+    <#Include Label = "DualSemigroup">
+    <#Include Label = "DualSemigroupElement">
+    <#Include Label = "IsDualSemigroup">
+    <#Include Label = "IsDualSemigroupElement">
   </Section>
  
    <Section Label = "Changing the representation of a semigroup">

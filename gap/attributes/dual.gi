@@ -16,27 +16,34 @@ function(S)
 
   fam := NewFamily("DualSemigroupElementsFamily", IsDualSemigroupElement);
   dual := Objectify(NewType(CollectionsFamily(fam),
-                            IsWholeFamily and 
+                            IsWholeFamily and
                             IsDualSemigroup and
                             IsEnumerableSemigroupRep and
                             IsAttributeStoringRep),
                     rec());
 
   filts := IsDualSemigroupElement;
+
   if IsMultiplicativeElementWithOne(Representative(S)) then
     filts := filts and IsMultiplicativeElementWithOne;
   fi;
+
   type := NewType(fam, filts);
   fam!.type := type;
 
   SetTypeDualSemigroupElements(dual, type);
   SetDualSemigroupOfFamily(fam, dual);
 
+  SetDualSemigroup(dual, S);
+
   if HasIsFinite(S) then
     SetIsFinite(dual, IsFinite(S));
   fi;
 
-  SetDualSemigroup(dual, S);
+  if IsTransformationSemigroup(S) then
+    SetAntiIsomorphismTransformationSemigroup(dual,
+      AntiIsomorphismDualSemigroup(dual));
+  fi;
 
   if HasGeneratorsOfSemigroup(S) then
     SetGeneratorsOfSemigroup(dual, List(GeneratorsOfSemigroup(S),
@@ -52,7 +59,7 @@ function(S)
 end);
 
 # FS: the first argument is the dual of the semigroup the second belongs to.
-# FS: We must provide either the semigroup or its dual so that we can 
+# FS: We must provide either the semigroup or its dual so that we can
 # FS: create the dual semigroup element object, and it seems more intuitive
 # FS: to provide the dual.
 InstallGlobalFunction(DualSemigroupElement,
@@ -61,16 +68,12 @@ function(S, s)
     ErrorNoReturn("Semigroups: DualSemigroupElement: \n",
                   "the first argument must be a semigroup,");
   fi;
-  if not IsAssociativeElement(s) then
-    ErrorNoReturn("Semigroups: DualSemigroupElement: \n",
-                  "the second argument must be a semigroup element");
-  fi;
   if not s in DualSemigroup(S) then
     ErrorNoReturn("Semigroups: DualSemigroupElement: \n",
                   "the second argument must be an element of the dual ",
                   "semigroup of the first argument,");
   fi;
-  return DualSemigroupElementNC(S, s); 
+  return DualSemigroupElementNC(S, s);
 end);
 
 InstallGlobalFunction(DualSemigroupElementNC,
@@ -81,55 +84,65 @@ function(S, s)
   return s![1];
 end);
 
+InstallMethod(AntiIsomorphismDualSemigroup, "for a semigroup",
+[IsSemigroup],
+function(S)
+  local dual, inv, iso;
+
+  dual := DualSemigroup(S);
+  iso := function(x)
+    return DualSemigroupElement(dual, x);
+  end;
+
+  inv := function(x)
+    return DualSemigroupElement(S, x);
+  end;
+
+  return MappingByFunction(S, dual, iso, inv);
+end);
+
 ################################################################################
 ## Technical methods
 ################################################################################
-
-InstallMethod(MonoidByAdjoiningIdentity, "for a dual semigroup",
-[IsDualSemigroup],
-function(S)
-  local M;
-  M := DualSemigroup(MonoidByAdjoiningIdentity(DualSemigroup(S)));
-  SetUnderlyingSemigroupOfMonoidByAdjoiningIdentity(M, S);
-  return M;
-end);
-
-InstallOtherMethod(UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt,
-"for an element of a dual monoid formed by adjoining an identity",
-[IsDualSemigroupElement],
-function(s)
-  local S;
-  S := DualSemigroupOfFamily(FamilyObj(s));
-  return DualSemigroupElement(UnderlyingSemigroupOfMonoidByAdjoiningIdentity(S),
-          UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt(
-            DualSemigroupElement(DualSemigroup(S), s)));
-end);
 
 InstallMethod(OneMutable, "for a dual semigroup element",
 [IsDualSemigroupElement and IsMultiplicativeElementWithOne],
 function(s)
   local S;
   S := DualSemigroupOfFamily(FamilyObj(s));
-  return DualSemigroupElement(S, 
-                              One(DualSemigroupElement(DualSemigroup(S), s)));
+  return DualSemigroupElementNC(S,
+                                OneMutable(DualSemigroupElement(
+                                            DualSemigroup(S), s)));
+end);
+
+InstallMethod(MultiplicativeNeutralElement, "for a dual semigroup",
+[IsDualSemigroup],
+10, # add rank to beat enumeration methods
+function(S)
+  local m;
+  m := MultiplicativeNeutralElement(DualSemigroup(S));
+  if m <> fail then
+    return DualSemigroupElementNC(S, m);
+  fi;
+  return fail;
 end);
 
 InstallMethod(Representative, "for a dual semigroup",
 [IsDualSemigroup],
 function(S)
-  return DualSemigroupElement(S, Representative(DualSemigroup(S)));
+  return DualSemigroupElementNC(S, Representative(DualSemigroup(S)));
 end);
-
 
 InstallMethod(Size, "for a dual semigroup",
 [IsDualSemigroup],
+10, # add rank to beat enumeration methods
 function(S)
-  # since the dual of a dual semigroup is the original semigroup
   return Size(DualSemigroup(S));
 end);
 
 InstallMethod(AsList, "for a dual semigroup",
 [IsDualSemigroup],
+10, # add rank to beat enumeration methods
 function(S)
   return List(DualSemigroup(S), s -> DualSemigroupElementNC(S, s));
 end);
@@ -159,9 +172,9 @@ InstallMethod(ViewObj, "for dual semigroup elements",
 [IsDualSemigroupElement], PrintObj);
 
 InstallMethod(PrintObj, "for dual semigroup elements",
-[IsDualSemigroupElement], 
+[IsDualSemigroupElement],
 function(x)
-  Print("<", ViewString(x![1])," in the dual semigroup>");
+  Print("<", ViewString(x![1]), " in the dual semigroup>");
 end);
 
 InstallMethod(ViewObj, "for a dual semigroup",
