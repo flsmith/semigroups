@@ -14,7 +14,7 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi := function(mat)
   m := Length(rows);
   n := Length(rows[1]);
 
-  rows := List(rows, x -> BlistList([1 .. n], Positions(x, 1)));
+  rows := List(rows, x -> BlistList([1 .. n], Positions(x, ())));
   rowsbycontainment := List([1 .. n + 1], x -> []);
   emptyrow := List([1 .. n], x -> false);
   for i in [1 .. m] do

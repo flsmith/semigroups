@@ -8,18 +8,27 @@
 #############################################################################
 ##
 
-SEMIGROUPS.BitranslationsOfCongruenceFreeSemi := function(mat)
-  local rows, m, n, isPartialSuccess, isFullSuccess, extend, reject, bt, v, x, inv, translist;
+SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
+  local rows, m, n, rowsbycontainment, emptyrow, isPartialSuccess, isFullSuccess, extend, reject, bt, v, x, inv, translist, i, j;
   rows := ShallowCopy(mat);
   m := Length(rows);
   n := Length(rows[1]);
 
-  rows := List(rows, x -> BlistList([1 .. n], Positions(x, 1)));
-  
+  rows := List(rows, x -> BlistList([1 .. n], Positions(x, ())));
+  rowsbycontainment := List([1 .. n + 1], x -> []);
+  emptyrow := List([1 .. n], x -> false);
+  for i in [1 .. m] do
+    for j in [1 .. n] do
+      if rows[i][j] then
+        Add(rowsbycontainment[j], i);
+      fi;
+    od;
+  od;
+
   isPartialSuccess := function(x)
     local invblock, row;
-    for row in rows do
-      invblock := UnionBlist(inv{ListBlist([1 .. n], row)});
+    for i in rowsbycontainment[x[Length(x)]] do
+      invblock := UnionBlist(inv{ListBlist([1 .. n], rows[i])});
       if not ForAny(rows, y -> IsSubsetBlist(y, invblock)) then
         return false;
       fi;
