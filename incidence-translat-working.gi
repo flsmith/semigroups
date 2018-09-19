@@ -9,12 +9,14 @@
 ##
 
 SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
-  local rows, m, n, rowsbycontainment, emptyrow, isPartialSuccess, isFullSuccess, extend, reject, bt, v, x, inv, translist, i, j;
+  local rows, m, n, rownumbers, rowsbycontainment, emptyrow, isPartialSuccess, isFullSuccess, extend, reject, bt, v, x, inv, invnumber, translist, i, j;
   rows := ShallowCopy(mat);
   m := Length(rows);
   n := Length(rows[1]);
 
   rows := List(rows, x -> BlistList([1 .. n], Positions(x, ())));
+  rownumbers := Concatenation([1], List(rows, x -> NumberBlist(x)));
+  Sort(rownumbers);
   rowsbycontainment := List([1 .. n + 1], x -> []);
   emptyrow := List([1 .. n], x -> false);
   for i in [1 .. m] do
@@ -26,7 +28,7 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
   od;
 
   isPartialSuccess := function(x)
-    local invblock, row;
+    local invblock;
     for i in rowsbycontainment[x[Length(x)]] do
       invblock := UnionBlist(inv{ListBlist([1 .. n], rows[i])});
       if not ForAny(rows, y -> IsSubsetBlist(y, invblock)) then
@@ -37,13 +39,11 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
   end;
 
   isFullSuccess := function(x)
-    local invblock, row;
-    for row in rows do
-      invblock := UnionBlist(inv{ListBlist([1 .. n], row)});
-      if ForAny(invblock, x -> x) then
-        if not ForAny(rows, y -> y = invblock) then
-          return false;
-        fi;
+    local rowlist;
+    for i in [1 .. m] do
+      rowlist := ListBlist([1 .. n], rows[i]);
+      if not Sum(invnumber{rowlist}) - Size(rowlist) + 1 in rownumbers then
+        return false;
       fi;
     od;
     return true;
@@ -54,6 +54,7 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
     Add(w, 1);
     k := Length(w);
     inv[1][k] := true;
+    invnumber[1] := invnumber[1] + 2^(n - k);
   end;
 
   reject := function(q)
@@ -61,9 +62,11 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
     # return the next list to consider
     k := Length(q);
     inv[q[k]][k] := false;
+    invnumber[q[k]] := invnumber[q[k]] - 2^(n - k);
     if q[k] <= n then
       q[k] := q[k] + 1;
       inv[q[k]][k] := true;
+      invnumber[q[k]] := invnumber[q[k]] + 2^(n - k);
     elif k > 1 then
       q := reject(q{[1 .. k - 1]});
     else return 0;
@@ -91,6 +94,7 @@ SEMIGROUPS.BitranslationsOfCongruenceFreeSemi2 := function(mat)
   v           := 1;
   x           := [];
   inv         := List([1 .. n + 1], x -> List([1 .. n], y -> false));
+  invnumber   := List([1 .. n + 1], x -> 1);
   translist   := [];
   extend(x);
   x := bt(x);
