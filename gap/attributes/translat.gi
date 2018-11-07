@@ -243,21 +243,6 @@ SEMIGROUPS.RightTranslationsByDual := function(R)
                                        i -> inv_list[map_list[i] ^ d![1]]))));
 end;
 
-# Choose how to calculate the elements of a translational hull
-SEMIGROUPS.Bitranslations := function(H)
-  local S;
-  S := UnderlyingSemigroup(H);
-  if IsRectangularBand(S) then
-    return Semigroup(GeneratorsOfSemigroup(H));
-  elif IsReesZeroMatrixSemigroup(S) then
-    return SEMIGROUPS.BitranslationsOfZeroSimple(H);
-  elif SEMIGROUPS.IsNormalRMSOverGroup(S) then
-    return SEMIGROUPS.BitranslationsOfNormalRMS(H);
-  else
-    return SEMIGROUPS.BitranslationsByGenerators(H);
-  fi;
-end;
-
 # Left translations are the same as edge-label preserving endomorphisms of the
 # right cayley graph
 SEMIGROUPS.LeftTranslationsSemigroupElementsByGenerators := function(L)
@@ -311,6 +296,21 @@ SEMIGROUPS.RightTranslationsSemigroupElementsByGenerators := function(R)
   return Semigroup(gens, rec(small := true));
 end;
 
+# Choose how to calculate the elements of a translational hull
+SEMIGROUPS.Bitranslations := function(H)
+  local S;
+  S := UnderlyingSemigroup(H);
+  if IsRectangularBand(S) then
+    return Semigroup(GeneratorsOfSemigroup(H));
+  elif IsReesZeroMatrixSemigroup(S) then
+    return SEMIGROUPS.BitranslationsOfZeroSimple(H);
+  elif SEMIGROUPS.IsNormalRMSOverGroup(S) then
+    return SEMIGROUPS.BitranslationsOfNormalRMS(H);
+  else
+    return SEMIGROUPS.BitranslationsByGenerators(H);
+  fi;
+end;
+
 # Calculates bitranslations of an arbitrary (finite)
 # semigroup with known generators.
 # This is a backtrack search on functions from the semigroup to itself.
@@ -321,19 +321,19 @@ end;
 # as well as restriction by the translation condition if Sx_i intersect Sx_k is
 # non-empty or x_i S intersect x_k S is non-empty.
 SEMIGROUPS.BitranslationsByGenerators := function(H)
-  local S, n, isweaklyreductive, slist, sortedlist, L, R, multtable, t, tinv, M,
-  reps, repspos, m, multtablepossets, transposepossets, pos, I, q,
+  local S, n, isweaklyreductive, nronly, slist, sortedlist, L, R, multtable, t,
+  tinv, M, reps, repspos, m, multtablepossets, transposepossets, pos, I, q,
   possibleidempotentfvals, possibleidempotentgvals, possiblefrepvals,
   possiblegrepvals, possiblefrepvalsfromidempotent,
   possiblegrepvalsfromidempotent, restrictbyweakreductivity, extendf,
   propagatef, propagateg, restrictfromf, restrictfromg, unrestrict, reject, bt,
   ftransrestrictionatstage, flinkedrestrictionatstage, gtransrestrictionatstage,
-  glinkedrestrictionatstage, whenboundfvals, whenboundgvals, linkedpairs, f, g,
-  k, i, j, e, s, y;
+  glinkedrestrictionatstage, whenboundfvals, whenboundgvals, linkedpairs, f, g, count, k, i, j, e, s, y;
 
   S                 := UnderlyingSemigroup(H);
   n                 := Size(S);
   isweaklyreductive := Size(InnerTranslationalHull(S)) = n;
+  nronly            := ValueOption("SEMIGROUPS_bitranslat_nr_only") = true;
   slist             := AsListCanonical(S);
   sortedlist        := AsSSortedList(S);
   L                 := LeftTranslationsSemigroup(S);
@@ -708,15 +708,26 @@ SEMIGROUPS.BitranslationsByGenerators := function(H)
   f := [];
   g := [];
 
+  count := 0;
+
   k := extendf(0);
   k := bt(k);
   while k = m + 1 do
     if isweaklyreductive then
       restrictbyweakreductivity(f, g);
     fi;
-    Add(linkedpairs, [ShallowCopy(f), ShallowCopy(g)]);
+    if nronly then
+      count := count + 1;
+    else
+      Add(linkedpairs, [ShallowCopy(f), ShallowCopy(g)]);
+    fi;
     k := bt(reject(k - 1));
   od;
+
+  if nronly then
+    return count;
+  fi;
+
   Apply(linkedpairs, x -> BitranslationNC(H,
                             LeftTranslationNC(L, Transformation(x[1])),
                             RightTranslationNC(R, Transformation(x[2]))));
@@ -1080,6 +1091,14 @@ function(S)
     Add(I, BitranslationNC(H, l, r));
   od;
   return Semigroup(I);
+end);
+
+# Get the number of bitranslations without necessarily computing them all
+InstallMethod(NrBitranslations, "for a semigroup",
+[IsEnumerableSemigroupRep and IsFinite and HasGeneratorsOfSemigroup],
+function(S)
+  return SEMIGROUPS.BitranslationsByGenerators(TranslationalHullSemigroup(S) :
+                                               SEMIGROUPS_bitranslat_nr_only);
 end);
 
 # Creates a linked pair (l, r) from a left translation l and a right

@@ -467,8 +467,9 @@ end;
 # Performance suffers greatly as the size of the group increases.
 SEMIGROUPS.BitranslationsOfZeroSimple := function(H)
   local S, iso, inv, reesmatsemi, gplist, nrrows, nrcols, zero, L, R, tt,
-  linkedpairs, linkedpairfromfuncs, fr, l, r, t1, iterator, t2, transfuncs, fx,
-  fy, unboundpositions, c, partialfunciterator, funcvals, i, funcs, j;
+  linkedpairs, nronly, count, linkedpairfromfuncs, fr, l, r, t1, iterator, t2,
+  transfuncs, fx, fy, unboundpositions, c, partialfunciterator, funcvals, i,
+  funcs, j;
 
   S := UnderlyingSemigroup(H);
   if not (IsFinite(S) and IsZeroSimpleSemigroup(S)) then
@@ -485,6 +486,8 @@ SEMIGROUPS.BitranslationsOfZeroSimple := function(H)
   R           := RightTranslationsSemigroup(S);
   tt          := SEMIGROUPS.FindTranslationTransformations(S);
   linkedpairs := [];
+  nronly      := ValueOption("SEMIGROUPS_bitranslat_nr_only") = true;
+  count       := 0;
 
   linkedpairfromfuncs := function(t1, t2, fx, fy)
     local fl, fr;
@@ -553,16 +556,26 @@ SEMIGROUPS.BitranslationsOfZeroSimple := function(H)
               for j in [1 .. Length(unboundpositions)] do
                 fy[unboundpositions[j]] := gplist[funcvals[j]];
               od;
-              Add(linkedpairs, linkedpairfromfuncs(t1, t2, fx, fy));
+              if nronly then
+                count := count + 1;
+              else 
+                Add(linkedpairs, linkedpairfromfuncs(t1, t2, fx, fy));
+              fi;
             od;
           else
-            Add(linkedpairs, linkedpairfromfuncs(t1, t2, fx, fy));
+            if nronly then
+              count := count + 1;
+            else
+              Add(linkedpairs, linkedpairfromfuncs(t1, t2, fx, fy));
+            fi;
           fi;
         od;
       fi;
     od;
   od;
-
+  if nronly then
+    return count;
+  fi;
   return Set(linkedpairs);
 end;
 
@@ -571,8 +584,8 @@ end;
 # Clifford and Petrich, 'Some Classes of Completely Regular Semigroups'
 # Journal of Algebra 46, 1977
 SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
-  local S, P, m, n, G, triples, extendf, extendg, nextf, nextg, partialcheckrow,
-  partialcheckcol, reject, bt, k, f, g, a;
+  local S, P, m, n, G, triples, nronly, count, extendf, extendg, nextf, nextg,
+  partialcheckrow, partialcheckcol, reject, bt, k, f, g, a;
 
   S       := UnderlyingSemigroup(H);
   if not SEMIGROUPS.IsNormalRMSOverGroup(S) then
@@ -584,6 +597,8 @@ SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
   n       := Size(P[1]);
   G       := UnderlyingSemigroup(S);
   triples := [];
+  nronly  := ValueOption("SEMIGROUPS_bitranslat_nr_only") = true;
+  count   := 0;
 
   extendf := function(k)
     f[k] := 1;
@@ -678,7 +693,11 @@ SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
     if k > m then
       if partialcheckcol(k) then
         if k = n then
-          Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          if nronly then
+            count := count + 1;
+          else
+            Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          fi;
           k := reject(k);
           return bt(k);
         fi;
@@ -693,7 +712,11 @@ SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
     if k > n then
       if partialcheckrow(k) then
         if k = m then
-          Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          if nronly then
+            count := count + 1;
+          else
+            Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          fi;
           k := reject(k);
           return bt(k);
         fi;
@@ -714,7 +737,11 @@ SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
 
       if partialcheckcol(k) then
         if k = m and k = n then
-          Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          if nronly then
+            count := count + 1;
+          else
+            Add(triples, [a, ShallowCopy(f), ShallowCopy(g)]);
+          fi;
           k := reject(k);
           return bt(k);
         fi;
@@ -744,6 +771,10 @@ SEMIGROUPS.BitranslationsOfNormalRMS := function(H)
     g := [];
     bt(k);
   od;
+
+  if nronly then
+    return count;
+  fi;
 
   # careful with the order!
   Apply(triples, x -> SEMIGROUPS.BitranslationOfNormalRMSByTripleNC(H,
