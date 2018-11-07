@@ -249,7 +249,7 @@ SEMIGROUPS.Bitranslations := function(H)
   S := UnderlyingSemigroup(H);
   if IsRectangularBand(S) then
     return Semigroup(GeneratorsOfSemigroup(H));
-  elif IsZeroSimpleSemigroup(S) then
+  elif IsReesZeroMatrixSemigroup(S) then
     return SEMIGROUPS.BitranslationsOfZeroSimple(H);
   elif SEMIGROUPS.IsNormalRMSOverGroup(S) then
     return SEMIGROUPS.BitranslationsOfNormalRMS(H);
@@ -335,7 +335,7 @@ SEMIGROUPS.BitranslationsByGenerators := function(H)
   n                 := Size(S);
   isweaklyreductive := Size(InnerTranslationalHull(S)) = n;
   slist             := AsListCanonical(S);
-  sortedlist        := AsSortedList(S);
+  sortedlist        := AsSSortedList(S);
   L                 := LeftTranslationsSemigroup(S);
   R                 := RightTranslationsSemigroup(S);
   multtable         := MultiplicationTable(S);
