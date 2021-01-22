@@ -1432,7 +1432,7 @@ gap_int_t EN_SEMI_FINAL_LETTER(Obj self, gap_semigroup_t so, gap_int_t pos) {
 
   if (en_semi_get_type(es) != UNKNOWN) {
     FroidurePin<Element const*>* semi_cpp = en_semi_get_semi_cpp(es);
-    return INTOBJ_INT(semi_cpp->last_letter(INT_INTOBJ(pos) - 1) + 1);
+    return INTOBJ_INT(semi_cpp->final_letter(INT_INTOBJ(pos) - 1) + 1);
   } else {
     gap_rec_t fp = fropin(so, INTOBJ_INT(-1), 0, False);
     return ELM_PLIST(ElmPRec(fp, RNamName("final")), INT_INTOBJ(pos));

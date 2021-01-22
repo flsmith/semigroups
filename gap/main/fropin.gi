@@ -685,3 +685,16 @@ function(S, x)
   fi;
   return ShallowCopy(EN_SEMI_FACTORIZATION(S, PositionCanonical(S, x)));
 end);
+
+InstallMethod(FirstLetter,
+"for an enumerable semigroup and a positive integer",
+[IsEnumerableSemigroupRep, IsInt],
+function(S, pos)
+  if Size(S) < pos then
+    ErrorNoReturn("Semigroups: FirstLetter:\n",
+                  "the second argument <pos> is larger than the ",
+                  "size of the first argument <S>,");
+  fi;
+
+  return EN_SEMI_FIRST_LETTER(S, pos);
+end);
