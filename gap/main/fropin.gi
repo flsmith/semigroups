@@ -698,3 +698,42 @@ function(S, pos)
 
   return EN_SEMI_FIRST_LETTER(S, pos);
 end);
+
+InstallMethod(FinalLetter,
+"for an enumerable semigroup and a positive integer",
+[IsEnumerableSemigroupRep, IsInt],
+function(S, pos)
+  if Size(S) < pos then
+    ErrorNoReturn("Semigroups: FinalLetter:\n",
+                  "the second argument <pos> is larger than the ",
+                  "size of the first argument <S>,");
+  fi;
+
+  return EN_SEMI_FINAL_LETTER(S, pos);
+end);
+
+InstallMethod(Prefix,
+"for an enumerable semigroup and a positive integer",
+[IsEnumerableSemigroupRep, IsInt],
+function(S, pos)
+  if Size(S) < pos then
+    ErrorNoReturn("Semigroups: Prefix:\n",
+                  "the second argument <pos> is larger than the ",
+                  "size of the first argument <S>,");
+  fi;
+
+  return EN_SEMI_PREFIX(S, pos);
+end);
+
+InstallMethod(Suffix,
+"for an enumerable semigroup and a positive integer",
+[IsEnumerableSemigroupRep, IsInt],
+function(S, pos)
+  if Size(S) < pos then
+    ErrorNoReturn("Semigroups: Suffix:\n",
+                  "the second argument <pos> is larger than the ",
+                  "size of the first argument <S>,");
+  fi;
+
+  return EN_SEMI_SUFFIX(S, pos);
+end);
