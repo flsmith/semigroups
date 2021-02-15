@@ -737,3 +737,27 @@ function(S, pos)
 
   return EN_SEMI_SUFFIX(S, pos);
 end);
+
+InstallMethod(MultiplicationTableWithCanonicalPositions,
+"for an enumerable semigroup",
+[IsEnumerableSemigroupRep],
+function(S)
+  local n, slist, sortedlist, t, tinv, M;
+  n           := Size(S);
+  slist       := AsListCanonical(S);
+  sortedlist  := AsSortedList(S);
+
+  t    := Transformation(List([1 .. n],
+                         i -> PositionCanonical(S, sortedlist[i])));
+  tinv := InverseOfTransformation(t);
+  M    := MultiplicationTable(S);
+
+  return List([1 .. n], i -> List([1 .. n], j -> M[i ^ tinv][j ^ tinv] ^ t));
+end);
+
+InstallMethod(TransposedMultiplicationTableWithCanonicalPositions,
+"for an enumerable semigroup",
+[IsEnumerableSemigroupRep],
+function(S)
+  return TransposedMat(MultiplicationTableWithCanonicalPositions(S));
+end);

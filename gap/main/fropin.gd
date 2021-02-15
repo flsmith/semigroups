@@ -56,3 +56,10 @@ DeclareOperation("FinalLetter", [IsEnumerableSemigroupRep, IsInt]);
 DeclareOperation("FirstLetter", [IsEnumerableSemigroupRep, IsInt]);
 DeclareOperation("Prefix", [IsEnumerableSemigroupRep, IsInt]);
 DeclareOperation("Suffix", [IsEnumerableSemigroupRep, IsInt]);
+
+# TODO: a better name for this
+DeclareAttribute("MultiplicationTableWithCanonicalPositions",
+                 IsEnumerableSemigroupRep);
+# TODO: do we really want this attribute?
+DeclareAttribute("TransposedMultiplicationTableWithCanonicalPositions",
+                 IsEnumerableSemigroupRep);
