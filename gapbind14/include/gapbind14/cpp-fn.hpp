@@ -36,7 +36,7 @@
 
 namespace gapbind14 {
 
-  constexpr size_t MAX_FUNCTIONS = 36;
+  constexpr size_t MAX_FUNCTIONS = 128;
   extern UInt      T_GAPBIND14_OBJ;
 
   ////////////////////////////////////////////////////////////////////////
